@@ -1,0 +1,150 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <title>File Upload App</title>
+    <style>
+      body {
+        font-family: sans-serif;
+        max-width: 700px;
+        margin: 40px auto;
+        padding: 0 20px;
+      }
+      h1 {
+        font-size: 1.5rem;
+      }
+      #upload-section {
+        margin-bottom: 30px;
+      }
+      #message {
+        margin-top: 10px;
+        font-weight: bold;
+      }
+      #message.error {
+        color: red;
+      }
+      #message.success {
+        color: green;
+      }
+      table {
+        width: 100%;
+        border-collapse: collapse;
+      }
+      th,
+      td {
+        text-align: left;
+        padding: 8px;
+        border-bottom: 1px solid #ddd;
+      }
+      button {
+        cursor: pointer;
+      }
+      .btn-delete {
+        color: red;
+        background: none;
+        border: none;
+      }
+      .btn-download {
+        color: blue;
+        background: none;
+        border: none;
+      }
+    </style>
+  </head>
+  <body>
+    <h1>📁 File Upload App</h1>
+
+    <div id="upload-section">
+      <input type="file" id="fileInput" />
+      <button onclick="uploadFile()">Upload</button>
+      <div id="message"></div>
+    </div>
+
+    <h2>Uploaded Files</h2>
+    <table>
+      <thead>
+        <tr>
+          <th>Name</th>
+          <th>Size</th>
+          <th>Uploaded</th>
+          <th>Actions</th>
+        </tr>
+      </thead>
+      <tbody id="file-list"></tbody>
+    </table>
+
+    <script>
+      const API = "http://localhost:5000";
+
+      async function uploadFile() {
+        const fileInput = document.getElementById("fileInput");
+        const msg = document.getElementById("message");
+        if (!fileInput.files[0]) {
+          showMessage("Please select a file.", "error");
+          return;
+        }
+
+        const formData = new FormData();
+        formData.append("file", fileInput.files[0]);
+
+        try {
+          const res = await fetch(`${API}/upload`, {
+            method: "POST",
+            body: formData,
+          });
+          const data = await res.json();
+          if (res.ok) {
+            showMessage("Uploaded successfully!", "success");
+            loadFiles();
+          } else showMessage(data.error, "error");
+        } catch {
+          showMessage("Upload failed. Is the backend running?", "error");
+        }
+      }
+
+      async function loadFiles() {
+        const res = await fetch(`${API}/files`);
+        const data = await res.json();
+        const tbody = document.getElementById("file-list");
+        tbody.innerHTML = "";
+        for (const f of data.files) {
+          tbody.innerHTML += `
+          <tr>
+            <td>${f.name}</td>
+            <td>${f.size_kb} KB</td>
+            <td>${f.uploaded_at}</td>
+            <td>
+              <button class="btn-download" onclick="downloadFile('${f.name}')">⬇ Download</button>
+              <button class="btn-delete" onclick="deleteFile('${f.name}')">🗑 Delete</button>
+            </td>
+          </tr>`;
+        }
+      }
+
+      async function downloadFile(name) {
+        const res = await fetch(`${API}/files/${name}/download`);
+        const data = await res.json();
+        if (res.ok) window.open(data.url, "_blank");
+        else alert(data.error);
+      }
+
+      async function deleteFile(name) {
+        if (!confirm(`Delete ${name}?`)) return;
+        const res = await fetch(`${API}/files/${name}`, { method: "DELETE" });
+        const data = await res.json();
+        if (res.ok) {
+          showMessage(data.message, "success");
+          loadFiles();
+        } else showMessage(data.error, "error");
+      }
+
+      function showMessage(text, type) {
+        const el = document.getElementById("message");
+        el.textContent = text;
+        el.className = type;
+      }
+
+      loadFiles(); // Load on page open
+    </script>
+  </body>
+</html>
