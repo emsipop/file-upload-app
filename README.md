@@ -37,7 +37,9 @@ The frontend is a simple HTML/JS page that runs in the browser. When a user uplo
 
 ## How to Run Locally
 
-1. Clone the repository
+### Python version
+
+1. Clone the repository and navigate to `python-version/`
 2. Create `backend/.env` with your AWS credentials (see Environment Variables below)
 3. Create and activate a virtual environment:
    - `python -m venv venv`
@@ -45,6 +47,16 @@ The frontend is a simple HTML/JS page that runs in the browser. When a user uplo
 4. Install dependencies: `pip install flask flask-cors boto3 python-dotenv`
 5. Run the backend: `python backend/app.py`
 6. Open `frontend/index.html` in your browser
+
+### TypeScript version
+
+1. Clone the repository and navigate to `ts-version/`
+2. Create `backend/.env` with your AWS credentials (see Environment Variables below)
+3. Install backend dependencies: `cd backend && npm install`
+4. Start the backend: `npm run dev`
+5. In a new terminal, install frontend dependencies: `cd frontend && npm install`
+6. Start the frontend: `npm run dev`
+7. Open `http://localhost:5173` in your browser
 
 ## Environment Variables
 
