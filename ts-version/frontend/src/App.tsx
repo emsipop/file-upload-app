@@ -151,43 +151,54 @@ function App() {
           </tr>
         </thead>
         <tbody>
-          {files.map((f) => (
-            <tr key={f.name}>
-              <td style={{ padding: 8, borderBottom: "1px solid #ddd" }}>
-                {f.name}
-              </td>
-              <td style={{ padding: 8, borderBottom: "1px solid #ddd" }}>
-                {f.size_kb} KB
-              </td>
-              <td style={{ padding: 8, borderBottom: "1px solid #ddd" }}>
-                {f.uploaded_at}
-              </td>
-              <td style={{ padding: 8, borderBottom: "1px solid #ddd" }}>
-                <button
-                  onClick={() => downloadFile(f.name)}
-                  style={{
-                    color: "blue",
-                    background: "none",
-                    border: "none",
-                    cursor: "pointer",
-                  }}
-                >
-                  ⬇ Download
-                </button>
-                <button
-                  onClick={() => deleteFile(f.name)}
-                  style={{
-                    color: "red",
-                    background: "none",
-                    border: "none",
-                    cursor: "pointer",
-                  }}
-                >
-                  🗑 Delete
-                </button>
+          {files.length === 0 ? (
+            <tr>
+              <td
+                colSpan={4}
+                style={{ padding: 8, color: "#888", fontStyle: "italic" }}
+              >
+                No files uploaded yet.
               </td>
             </tr>
-          ))}
+          ) : (
+            files.map((f) => (
+              <tr key={f.name}>
+                <td style={{ padding: 8, borderBottom: "1px solid #ddd" }}>
+                  {f.name}
+                </td>
+                <td style={{ padding: 8, borderBottom: "1px solid #ddd" }}>
+                  {f.size_kb} KB
+                </td>
+                <td style={{ padding: 8, borderBottom: "1px solid #ddd" }}>
+                  {f.uploaded_at}
+                </td>
+                <td style={{ padding: 8, borderBottom: "1px solid #ddd" }}>
+                  <button
+                    onClick={() => downloadFile(f.name)}
+                    style={{
+                      color: "blue",
+                      background: "none",
+                      border: "none",
+                      cursor: "pointer",
+                    }}
+                  >
+                    ⬇ Download
+                  </button>
+                  <button
+                    onClick={() => deleteFile(f.name)}
+                    style={{
+                      color: "red",
+                      background: "none",
+                      border: "none",
+                      cursor: "pointer",
+                    }}
+                  >
+                    🗑 Delete
+                  </button>
+                </td>
+              </tr>
+            ))
+          )}
         </tbody>
       </table>
     </div>
